@@ -15,7 +15,7 @@
 | 10 Dashboard and activity | Partial | Dashboard reads local inventory summaries and exposes pending/failed synchronization status; authorized household activity feed route and explicit loading/empty/error/configuration states are implemented. Filtering and stale/offline freshness indicators remain. |
 | 11 Reports and data management | Partial | CSV codec, PDF generation with local documents-directory persistence, import preview validation, feedback boundary, and account-deletion request RPC exist; atomic import apply, sharing, and full deletion worker remain. |
 | 12 Additional features | Partial | Open Food Facts v3 adapter is connected to the product form; private product-image boundary, feedback repository with a user-facing form, user-specific household-scoped favorites, and recently used product history are implemented. Image cleanup jobs remain. |
-| 13 Settings and accessibility | Partial | Notification settings with contextual device permission, appearance controls, secure persistent theme preference, and resumable onboarding steps exist; app lock, accessibility audit, and RTL checks remain. |
+| 13 Settings and accessibility | Partial | Notification settings with contextual device permission, appearance controls, secure persistent theme preference, resumable onboarding steps, and biometric app-lock settings exist; accessibility audit and RTL checks remain. |
 | 14 Hardening and release | Partial | CI quality-gate workflow added; full RLS/concurrency/migration/device/E2E/release verification remains. |
 
 Commits have been created locally on `implementation/pantry-mate`; no push has
