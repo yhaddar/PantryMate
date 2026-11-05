@@ -35,6 +35,16 @@ class ProductRepository {
     return _fromRow(row);
   }
 
+  Future<void> setImagePath({
+    required String productId,
+    required String imagePath,
+  }) async {
+    await _client
+        .from('products')
+        .update({'image_path': imagePath})
+        .eq('id', productId);
+  }
+
   Future<Set<String>> listFavoriteProductIds(String householdId) async {
     final rows = await _client
         .from('favorite_products')

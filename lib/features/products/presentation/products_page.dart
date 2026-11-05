@@ -1,10 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/providers/app_providers.dart';
 import '../../../infrastructure/external_apis/open_food_facts_service.dart';
+import '../../../infrastructure/storage/product_image_service.dart';
 import '../data/product_repository.dart';
 import '../domain/product_models.dart';
 
@@ -26,6 +30,7 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
   String? _error;
   bool _saving = false;
   bool _lookingUp = false;
+  XFile? _selectedImage;
 
   @override
   void dispose() {
@@ -83,7 +88,8 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
       _error = null;
     });
     try {
-      await ProductRepository(Supabase.instance.client).create(
+      final repository = ProductRepository(Supabase.instance.client);
+      final product = await repository.create(
         Product(
           id: const Uuid().v4(),
           householdId: householdId,
@@ -93,14 +99,55 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
           barcode: _barcode.text.trim().isEmpty ? null : _barcode.text.trim(),
         ),
       );
+      final image = _selectedImage;
+      if (image != null) {
+        final Uint8List bytes = await image.readAsBytes();
+        final path = await ProductImageService().upload(
+          client: Supabase.instance.client,
+          householdId: householdId,
+          productId: product.id,
+          objectName: image.name,
+          bytes: bytes,
+          contentType: 'image/jpeg',
+        );
+        await repository.setImagePath(productId: product.id, imagePath: path);
+      }
       _name.clear();
       _barcode.clear();
+      setState(() => _selectedImage = null);
       await _load(householdId);
     } on PostgrestException catch (error) {
       setState(() => _error = error.message);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
+  }
+
+  Future<void> _chooseImage() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: const Text('Take a photo'),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Choose from gallery'),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null) return;
+    final image = source == ImageSource.camera
+        ? await ProductImageService().chooseFromCamera()
+        : await ProductImageService().chooseFromGallery();
+    if (mounted && image != null) setState(() => _selectedImage = image);
   }
 
   Future<void> _lookupBarcode() async {
@@ -194,6 +241,15 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
                   decoration: const InputDecoration(labelText: 'Base unit'),
                 ),
                 const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: _saving ? null : _chooseImage,
+                  icon: const Icon(Icons.image_outlined),
+                  label: Text(
+                    _selectedImage == null
+                        ? 'Add product image'
+                        : 'Image selected: ${_selectedImage!.name}',
+                  ),
+                ),
                 FilledButton(
                   onPressed: _saving ? null : () => _save(householdId),
                   child: const Text('Add product'),
