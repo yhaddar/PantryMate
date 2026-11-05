@@ -2,12 +2,64 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/app_providers.dart';
+import '../../../infrastructure/security/app_lock_service.dart';
 
-class AppearanceSettingsPage extends ConsumerWidget {
+class AppearanceSettingsPage extends ConsumerStatefulWidget {
   const AppearanceSettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppearanceSettingsPage> createState() =>
+      _AppearanceSettingsPageState();
+}
+
+class _AppearanceSettingsPageState
+    extends ConsumerState<AppearanceSettingsPage> {
+  bool _appLockEnabled = false;
+  bool _loadingLock = true;
+  String? _lockMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLock();
+  }
+
+  Future<void> _loadLock() async {
+    final enabled = await AppLockService().isEnabled();
+    if (mounted) {
+      setState(() {
+        _appLockEnabled = enabled;
+        _loadingLock = false;
+      });
+    }
+  }
+
+  Future<void> _setAppLock(bool enabled) async {
+    setState(() => _lockMessage = null);
+    final service = AppLockService();
+    if (enabled && !await service.authenticate()) {
+      if (mounted) {
+        setState(
+          () => _lockMessage = 'Biometric verification was not completed.',
+        );
+      }
+      return;
+    }
+    final saved = await service.setEnabled(enabled);
+    if (!saved) {
+      if (mounted) {
+        setState(
+          () => _lockMessage =
+              'Biometric authentication is unavailable on this device.',
+        );
+      }
+      return;
+    }
+    if (mounted) setState(() => _appLockEnabled = enabled);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final mode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Appearance and accessibility')),
@@ -51,6 +103,20 @@ class AppearanceSettingsPage extends ConsumerWidget {
               ),
             ),
           ),
+          const SizedBox(height: 12),
+          SwitchListTile(
+            title: const Text('Biometric app lock'),
+            subtitle: const Text(
+              'Require Face ID, Touch ID, or Android biometrics when opening PantryMate.',
+            ),
+            value: _appLockEnabled,
+            onChanged: _loadingLock ? null : _setAppLock,
+          ),
+          if (_lockMessage != null)
+            Text(
+              _lockMessage!,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
         ],
       ),
     );

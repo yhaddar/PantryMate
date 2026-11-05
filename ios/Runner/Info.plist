@@ -6,6 +6,8 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>PantryMate uses Face ID to protect your household data.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Pantry Mate</string>
 	<key>CFBundleExecutable</key>
