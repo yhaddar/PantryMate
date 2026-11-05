@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/providers/app_providers.dart';
+import '../../../infrastructure/notifications/local_notification_service.dart';
 import '../../notifications/data/notification_preferences_repository.dart';
 
 class NotificationSettingsPage extends ConsumerStatefulWidget {
@@ -23,6 +24,7 @@ class _NotificationSettingsPageState
   ];
   Map<String, bool> _values = {};
   bool _loading = true;
+  bool _requestingPermission = false;
   String? _error;
 
   @override
@@ -71,6 +73,25 @@ class _NotificationSettingsPageState
     }
   }
 
+  Future<void> _requestPermission() async {
+    setState(() {
+      _requestingPermission = true;
+      _error = null;
+    });
+    try {
+      final granted = await LocalNotificationService().requestPermissions();
+      if (mounted && granted == false) {
+        setState(() => _error = 'Notification permission was not granted.');
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _error = 'Unable to request notification permission.');
+      }
+    } finally {
+      if (mounted) setState(() => _requestingPermission = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,6 +111,20 @@ class _NotificationSettingsPageState
                       ),
                     ),
                   ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                  child: OutlinedButton.icon(
+                    onPressed: _requestingPermission
+                        ? null
+                        : _requestPermission,
+                    icon: const Icon(Icons.notifications_active_outlined),
+                    label: Text(
+                      _requestingPermission
+                          ? 'Requesting permission…'
+                          : 'Enable device notifications',
+                    ),
+                  ),
+                ),
                 ..._categories.map(
                   (category) => SwitchListTile(
                     title: Text(_label(category)),

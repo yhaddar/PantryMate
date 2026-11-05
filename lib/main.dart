@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/app.dart';
 import 'core/config/app_config.dart';
+import 'infrastructure/notifications/local_notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,5 +15,6 @@ Future<void> main() async {
       publishableKey: config.supabaseAnonKey,
     );
   }
+  await LocalNotificationService().initialize();
   runApp(const ProviderScope(child: PantryMateApp()));
 }
