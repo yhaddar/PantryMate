@@ -3,7 +3,7 @@
 | Phase | Status | Evidence / blocker |
 |---|---|---|
 | 0 Repository audit | Partial | Toolchain is available; repository was documentation-only; `IMPLEMENTATION_PLAN.md` is an audit prompt, not a Phase 0–14 plan. `IMPLEMENTATION.md` records the reconciliation and gates. |
-| 1 Project foundation | Partial | Flutter scaffold, Riverpod/go_router app shell, approved dependency lock, iOS target 15.0, configuration boundary, format/analyze/test checks, and current Android debug/iOS no-code-sign builds present. |
+| 1 Project foundation | Partial | Flutter scaffold, Riverpod/go_router app shell, approved dependency lock, iOS target 15.0, configuration boundary, and CI quality gates exist. On 2026-11-05, `dart format`, `flutter analyze`, 19 Flutter tests, Android debug build, and iOS debug no-code-sign build passed locally. Clean-checkout/CI and signed-device evidence remain. |
 | 2 Backend foundation | Partial | Supabase CLI initialized; initial schema, RLS policies, seed categories, change log, operation receipts, and idempotent `consume_inventory` RPC added. Live migration/RLS execution is unverified without a running test project. |
 | 3 Local data foundation | Partial | Drift schema generated for products, batches, outbox operations, and sync metadata. Repository behavior and migration tests remain. |
 | 4 Authentication and households | Partial | Auth repository, household models/repository, role rules, atomic household creation, and invitation acceptance RPC added. OAuth/session/device verification and live RLS tests remain. |
