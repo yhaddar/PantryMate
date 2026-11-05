@@ -38,6 +38,22 @@ class HouseholdRepository {
         .toList();
   }
 
+  Future<List<Household>> accessibleHouseholds() async {
+    final rows = await _client
+        .from('households')
+        .select('id,name,timezone')
+        .order('name');
+    return rows
+        .map(
+          (row) => Household(
+            id: row['id'] as String,
+            name: row['name'] as String,
+            timezone: row['timezone'] as String,
+          ),
+        )
+        .toList();
+  }
+
   Future<HouseholdMembership> acceptInvitation(String tokenHash) async {
     final row = await _client.rpc(
       'accept_invitation',
