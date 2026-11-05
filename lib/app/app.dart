@@ -10,6 +10,7 @@ import '../features/products/presentation/products_page.dart';
 import '../features/shopping/presentation/shopping_page.dart';
 import '../features/dashboard/data/local_dashboard_repository.dart';
 import '../core/providers/app_providers.dart';
+import '../features/settings/presentation/notification_settings_page.dart';
 
 final _router = GoRouter(
   routes: [
@@ -34,6 +35,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/shopping',
       builder: (context, state) => const ShoppingPage(),
+    ),
+    GoRoute(
+      path: '/settings/notifications',
+      builder: (context, state) => const NotificationSettingsPage(),
     ),
   ],
 );
@@ -79,6 +84,10 @@ class DashboardPage extends ConsumerWidget {
           TextButton(
             onPressed: () => context.push('/shopping'),
             child: const Text('Shopping'),
+          ),
+          TextButton(
+            onPressed: () => context.push('/settings/notifications'),
+            child: const Text('Settings'),
           ),
         ],
       ),
