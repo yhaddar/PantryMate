@@ -13,9 +13,9 @@
 | 8 Shopping | Partial | Shopping schema and atomic purchase RPC added; mobile UI, list repository, and live transaction tests remain. |
 | 9 Notifications | Partial | Notification schema and local timing rules added; scheduling worker, push credentials, and device delivery tests remain. |
 | 10 Dashboard and activity | Partial | Initial dashboard shell exists; authoritative summaries, activity feed, filtering, and stale/offline data states remain. |
-| 11 Reports and data management | Partial | CSV codec exists; PDF snapshot, import preview/atomic apply, permissions, and deletion workflows remain. |
+| 11 Reports and data management | Partial | CSV codec, PDF snapshot, import preview validation, feedback boundary, and account-deletion request RPC exist; durable export delivery, atomic import apply, and full deletion worker remain. |
 | 12 Additional features | Partial | Open Food Facts v3 adapter, private product-image selection/storage boundary, and external failure classification added; barcode UI, image cleanup jobs, favorites, feedback, and help remain. |
-| 13 Settings and accessibility | Partial | Theme/settings models and Material 3 shell exist; persistent settings, onboarding, accessibility audit, and permissions UX remain. |
+| 13 Settings and accessibility | Partial | Notification settings and contextual permission boundaries exist; persistent theme/settings, onboarding, app lock, accessibility audit, and RTL checks remain. |
 | 14 Hardening and release | Partial | CI quality-gate workflow added; full RLS/concurrency/migration/device/E2E/release verification remains. |
 
 No commits or pushes have been made. The tracker must be updated only with
