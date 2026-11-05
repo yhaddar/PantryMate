@@ -3,18 +3,18 @@
 | Phase | Status | Evidence / blocker |
 |---|---|---|
 | 0 Repository audit | Partial | Toolchain is available; repository was documentation-only; `IMPLEMENTATION_PLAN.md` is an audit prompt, not a Phase 0–14 plan. `IMPLEMENTATION.md` records the reconciliation and gates. |
-| 1 Project foundation | Partial | Flutter scaffold, Riverpod/go_router app shell, approved dependency lock, iOS target 15.0, configuration boundary, format/analyze/test checks. Android debug build still needs completion. |
+| 1 Project foundation | Partial | Flutter scaffold, Riverpod/go_router app shell, approved dependency lock, iOS target 15.0, configuration boundary, format/analyze/test checks, and current Android debug/iOS no-code-sign builds present. |
 | 2 Backend foundation | Partial | Supabase CLI initialized; initial schema, RLS policies, seed categories, change log, operation receipts, and idempotent `consume_inventory` RPC added. Live migration/RLS execution is unverified without a running test project. |
 | 3 Local data foundation | Partial | Drift schema generated for products, batches, outbox operations, and sync metadata. Repository behavior and migration tests remain. |
 | 4 Authentication and households | Partial | Auth repository, household models/repository, role rules, atomic household creation, and invitation acceptance RPC added. OAuth/session/device verification and live RLS tests remain. |
-| 5 Products and catalog | Partial | Product model, duplicate detection, Supabase repository boundary, and global category seed added; barcode/image UI and live external lookup remain. |
+| 5 Products and catalog | Partial | Product model, duplicate detection, Supabase repository boundary, global category seed, barcode lookup control, and explicit Open Food Facts failure states added; live backend/storage verification remains. |
 | 6 Inventory core | Partial | Inventory domain rules, transactional consume RPC, real Drift batch repository, outbox-backed local batch creation, and inventory route exist; immutable history screens and concurrency execution remain. |
-| 7 Offline and synchronization | Partial | Drift outbox schema, operation enqueueing, retry backoff, cursor reconciliation, and tombstone detection exist; network worker, local reconciliation application, and failure UI remain. |
+| 7 Offline and synchronization | Partial | Drift outbox schema, operation enqueueing, bounded retry backoff, cursor reconciliation, tombstone detection, and injectable sync engine exist and pass focused tests; platform network worker, local reconciliation application, and failure UI remain. |
 | 8 Shopping | Partial | Shopping schema and atomic purchase RPC added; mobile UI, list repository, and live transaction tests remain. |
 | 9 Notifications | Partial | Notification schema and local timing rules added; scheduling worker, push credentials, and device delivery tests remain. |
-| 10 Dashboard and activity | Partial | Dashboard now reads local active/expired/expiring batch summaries; activity feed, filtering, and explicit stale/offline data states remain. |
+| 10 Dashboard and activity | Partial | Dashboard reads local active/expired/expiring batch summaries; authorized household activity feed route and explicit loading/empty/error/configuration states are implemented. Filtering and stale/offline freshness indicators remain. |
 | 11 Reports and data management | Partial | CSV codec, PDF snapshot, import preview validation, feedback boundary, and account-deletion request RPC exist; durable export delivery, atomic import apply, and full deletion worker remain. |
-| 12 Additional features | Partial | Open Food Facts v3 adapter, private product-image boundary, external failure classification, and feedback repository added; barcode UI, image cleanup jobs, favorites, and help remain. |
+| 12 Additional features | Partial | Open Food Facts v3 adapter is connected to the product form; private product-image boundary and feedback repository exist. Image cleanup jobs, favorites, and help remain. |
 | 13 Settings and accessibility | Partial | Notification settings and contextual permission boundaries exist; persistent theme/settings, onboarding, app lock, accessibility audit, and RTL checks remain. |
 | 14 Hardening and release | Partial | CI quality-gate workflow added; full RLS/concurrency/migration/device/E2E/release verification remains. |
 
