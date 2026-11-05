@@ -10,8 +10,13 @@ class AppLockService {
 
   final LocalAuthentication _authentication;
 
-  Future<bool> isEnabled() async =>
-      (await _storage.read(key: _enabledKey)) == 'true';
+  Future<bool> isEnabled() async {
+    try {
+      return (await _storage.read(key: _enabledKey)) == 'true';
+    } catch (_) {
+      return false;
+    }
+  }
 
   Future<bool> isAvailable() async {
     try {
@@ -24,8 +29,12 @@ class AppLockService {
 
   Future<bool> setEnabled(bool enabled) async {
     if (enabled && !await isAvailable()) return false;
-    await _storage.write(key: _enabledKey, value: enabled.toString());
-    return true;
+    try {
+      await _storage.write(key: _enabledKey, value: enabled.toString());
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<bool> authenticate() async {

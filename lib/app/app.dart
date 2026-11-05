@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../infrastructure/security/app_lock_service.dart';
 
 import '../features/inventory/presentation/inventory_page.dart';
 import '../features/inventory/presentation/add_inventory_page.dart';
@@ -65,11 +66,67 @@ final _router = GoRouter(
   ],
 );
 
-class PantryMateApp extends ConsumerWidget {
+class PantryMateApp extends ConsumerStatefulWidget {
   const PantryMateApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PantryMateApp> createState() => _PantryMateAppState();
+}
+
+class _PantryMateAppState extends ConsumerState<PantryMateApp>
+    with WidgetsBindingObserver {
+  final _lock = AppLockService();
+  bool _enabled = false;
+  bool _locked = false;
+  bool _loading = true;
+  bool _authenticating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _restoreLock();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  Future<void> _restoreLock() async {
+    final enabled = await _lock.isEnabled();
+    if (!mounted) return;
+    setState(() {
+      _enabled = enabled;
+      _locked = enabled;
+      _loading = false;
+    });
+    if (enabled) _authenticate();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!_enabled) return;
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      setState(() => _locked = true);
+    } else if (state == AppLifecycleState.resumed && _locked) {
+      _authenticate();
+    }
+  }
+
+  Future<void> _authenticate() async {
+    if (_authenticating || !_enabled) return;
+    _authenticating = true;
+    final success = await _lock.authenticate();
+    _authenticating = false;
+    if (mounted && success) setState(() => _locked = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'PantryMate',
       theme: ThemeData(
@@ -78,6 +135,38 @@ class PantryMateApp extends ConsumerWidget {
       ),
       themeMode: ref.watch(themeModeProvider),
       routerConfig: _router,
+      builder: (context, child) => Stack(
+        children: [
+          child ?? const SizedBox.shrink(),
+          if (_loading || _locked)
+            Positioned.fill(
+              child: Material(
+                color: Theme.of(context).colorScheme.surface,
+                child: SafeArea(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.lock_outline, size: 48),
+                        const SizedBox(height: 16),
+                        const Text('PantryMate is locked'),
+                        const SizedBox(height: 12),
+                        FilledButton(
+                          onPressed: _authenticating ? null : _authenticate,
+                          child: Text(
+                            _authenticating
+                                ? 'Checking…'
+                                : 'Unlock with biometrics',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
