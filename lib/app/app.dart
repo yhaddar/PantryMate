@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/inventory/presentation/inventory_page.dart';
@@ -7,6 +8,8 @@ import '../features/auth/presentation/auth_page.dart';
 import '../features/households/presentation/households_page.dart';
 import '../features/products/presentation/products_page.dart';
 import '../features/shopping/presentation/shopping_page.dart';
+import '../features/dashboard/data/local_dashboard_repository.dart';
+import '../core/providers/app_providers.dart';
 
 final _router = GoRouter(
   routes: [
@@ -51,11 +54,12 @@ class PantryMateApp extends StatelessWidget {
   }
 }
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final householdId = ref.watch(activeHouseholdIdProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('PantryMate'),
@@ -94,14 +98,48 @@ class DashboardPage extends StatelessWidget {
             icon: Icons.inventory_2_outlined,
             onTap: () => context.push('/inventory'),
           ),
-          const _SummaryCard(
-            label: 'Expiring soon',
-            value: 'No household selected',
-            icon: Icons.schedule_outlined,
-          ),
+          if (householdId == null)
+            const _SummaryCard(
+              label: 'Inventory',
+              value: 'Select a household to see local data',
+              icon: Icons.inventory_2_outlined,
+            )
+          else
+            FutureBuilder<DashboardSummary>(
+              future: ref
+                  .read(localDashboardRepositoryProvider)
+                  .load(householdId),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Card(
+                    child: ListTile(title: Text('Loading dashboard…')),
+                  );
+                }
+                final summary = snapshot.data!;
+                return Column(
+                  children: [
+                    _SummaryCard(
+                      label: 'Active inventory',
+                      value: '${summary.activeBatches} batches',
+                      icon: Icons.inventory_2_outlined,
+                    ),
+                    _SummaryCard(
+                      label: 'Expiring soon',
+                      value: '${summary.expiringSoonBatches} batches',
+                      icon: Icons.schedule_outlined,
+                    ),
+                    _SummaryCard(
+                      label: 'Expired',
+                      value: '${summary.expiredBatches} batches',
+                      icon: Icons.warning_amber_outlined,
+                    ),
+                  ],
+                );
+              },
+            ),
           const _SummaryCard(
             label: 'Shopping list',
-            value: 'No household selected',
+            value: 'Open shopping to view shared lists',
             icon: Icons.shopping_cart_outlined,
           ),
         ],
