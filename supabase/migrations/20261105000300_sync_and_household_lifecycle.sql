@@ -113,3 +113,35 @@ revoke all on function public.request_household_deletion(uuid) from public;
 grant execute on function public.request_household_deletion(uuid) to authenticated;
 revoke all on function public.cancel_household_deletion(uuid) from public;
 grant execute on function public.cancel_household_deletion(uuid) to authenticated;
+
+create table public.account_deletion_requests (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  requested_at timestamptz not null default now(),
+  scheduled_for timestamptz not null,
+  cancelled_at timestamptz
+);
+
+alter table public.account_deletion_requests enable row level security;
+create policy account_deletion_self on public.account_deletion_requests for select using (user_id = auth.uid());
+
+create or replace function public.request_account_deletion()
+returns timestamptz
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  scheduled timestamptz := now() + interval '30 days';
+begin
+  if auth.uid() is null then
+    raise exception using errcode = '42501', message = 'Authentication required';
+  end if;
+  insert into public.account_deletion_requests(user_id, scheduled_for)
+  values (auth.uid(), scheduled)
+  on conflict (user_id) do update set requested_at = now(), scheduled_for = excluded.scheduled_for, cancelled_at = null;
+  return scheduled;
+end;
+$$;
+
+revoke all on function public.request_account_deletion() from public;
+grant execute on function public.request_account_deletion() to authenticated;
