@@ -11,6 +11,7 @@ import '../features/shopping/presentation/shopping_page.dart';
 import '../features/dashboard/data/local_dashboard_repository.dart';
 import '../core/providers/app_providers.dart';
 import '../features/settings/presentation/notification_settings_page.dart';
+import '../features/reports/presentation/reports_page.dart';
 
 final _router = GoRouter(
   routes: [
@@ -40,6 +41,7 @@ final _router = GoRouter(
       path: '/settings/notifications',
       builder: (context, state) => const NotificationSettingsPage(),
     ),
+    GoRoute(path: '/reports', builder: (context, state) => const ReportsPage()),
   ],
 );
 
@@ -69,25 +71,19 @@ class DashboardPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('PantryMate'),
         actions: [
-          TextButton(
-            onPressed: () => context.push('/auth'),
-            child: const Text('Sign in'),
-          ),
-          TextButton(
-            onPressed: () => context.push('/households'),
-            child: const Text('Households'),
-          ),
-          TextButton(
-            onPressed: () => context.push('/products'),
-            child: const Text('Products'),
-          ),
-          TextButton(
-            onPressed: () => context.push('/shopping'),
-            child: const Text('Shopping'),
-          ),
-          TextButton(
-            onPressed: () => context.push('/settings/notifications'),
-            child: const Text('Settings'),
+          PopupMenuButton<String>(
+            onSelected: context.push,
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: '/auth', child: Text('Sign in')),
+              PopupMenuItem(value: '/households', child: Text('Households')),
+              PopupMenuItem(value: '/products', child: Text('Products')),
+              PopupMenuItem(value: '/shopping', child: Text('Shopping')),
+              PopupMenuItem(
+                value: '/settings/notifications',
+                child: Text('Notifications'),
+              ),
+              PopupMenuItem(value: '/reports', child: Text('Reports')),
+            ],
           ),
         ],
       ),
