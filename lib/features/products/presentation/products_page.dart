@@ -21,6 +21,7 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
   String _category = 'pantry';
   String _unit = 'piece';
   Future<List<Product>>? _products;
+  final _favoriteIds = <String>{};
   String? _error;
   bool _saving = false;
   bool _lookingUp = false;
@@ -34,11 +35,42 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
 
   Future<void> _load(String householdId) async {
     if (!ref.read(appConfigProvider).hasSupabase) return;
-    setState(
-      () => _products = ProductRepository(
-        Supabase.instance.client,
-      ).list(householdId),
-    );
+    final repository = ProductRepository(Supabase.instance.client);
+    setState(() => _products = repository.list(householdId));
+    try {
+      final favorites = await repository.listFavoriteProductIds(householdId);
+      if (mounted) setState(() => _favoriteIds..addAll(favorites));
+    } on PostgrestException catch (error) {
+      if (mounted) setState(() => _error = error.message);
+    }
+  }
+
+  Future<void> _setFavorite(String householdId, Product product) async {
+    final next = !_favoriteIds.contains(product.id);
+    setState(() {
+      if (next) {
+        _favoriteIds.add(product.id);
+      } else {
+        _favoriteIds.remove(product.id);
+      }
+    });
+    try {
+      await ProductRepository(Supabase.instance.client).setFavorite(
+        householdId: householdId,
+        productId: product.id,
+        favorite: next,
+      );
+    } on PostgrestException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        if (next) {
+          _favoriteIds.remove(product.id);
+        } else {
+          _favoriteIds.add(product.id);
+        }
+        _error = error.message;
+      });
+    }
   }
 
   Future<void> _save(String householdId) async {
@@ -195,6 +227,18 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
                                 title: Text(product.name),
                                 subtitle: Text(
                                   '${product.categoryId} · ${product.baseUnit}',
+                                ),
+                                trailing: IconButton(
+                                  tooltip: _favoriteIds.contains(product.id)
+                                      ? 'Remove favorite'
+                                      : 'Add favorite',
+                                  icon: Icon(
+                                    _favoriteIds.contains(product.id)
+                                        ? Icons.star
+                                        : Icons.star_border,
+                                  ),
+                                  onPressed: () =>
+                                      _setFavorite(householdId, product),
                                 ),
                               ),
                             )

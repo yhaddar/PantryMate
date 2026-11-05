@@ -35,6 +35,37 @@ class ProductRepository {
     return _fromRow(row);
   }
 
+  Future<Set<String>> listFavoriteProductIds(String householdId) async {
+    final rows = await _client
+        .from('favorite_products')
+        .select('product_id')
+        .eq('household_id', householdId);
+    return rows.map((row) => row['product_id'] as String).toSet();
+  }
+
+  Future<void> setFavorite({
+    required String householdId,
+    required String productId,
+    required bool favorite,
+  }) async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) throw const AuthException('Authentication required');
+    if (favorite) {
+      await _client.from('favorite_products').upsert({
+        'user_id': userId,
+        'household_id': householdId,
+        'product_id': productId,
+      });
+    } else {
+      await _client
+          .from('favorite_products')
+          .delete()
+          .eq('user_id', userId)
+          .eq('household_id', householdId)
+          .eq('product_id', productId);
+    }
+  }
+
   Product _fromRow(Map<String, dynamic> row) => Product(
     id: row['id'] as String,
     householdId: row['household_id'] as String,
