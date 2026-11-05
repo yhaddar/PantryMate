@@ -3,8 +3,8 @@ class AppConfig {
 
   factory AppConfig.fromEnvironment() {
     return const AppConfig(
-      supabaseUrl: String.fromEnvironment('SUPABASE_URL'),
-      supabaseAnonKey: String.fromEnvironment('SUPABASE_ANON_KEY'),
+      supabaseUrl: 'https://kerggpakhptlkaapgwyo.supabase.co',
+      supabaseAnonKey: 'sb_publishable_5luoif3Rf9-cJmvTYcu1EQ_TgsFh1FU',
     );
   }
 
