@@ -72,6 +72,8 @@ class _AppearanceSettingsPageState
           ),
           const SizedBox(height: 8),
           SegmentedButton<ThemeMode>(
+            showSelectedIcon: true,
+            multiSelectionEnabled: false,
             segments: const [
               ButtonSegment(
                 value: ThemeMode.system,
@@ -99,7 +101,7 @@ class _AppearanceSettingsPageState
               leading: Icon(Icons.accessibility_new_outlined),
               title: Text('Accessibility support'),
               subtitle: Text(
-                'PantryMate uses semantic labels, scalable text, clear states, and large touch targets throughout the app.',
+                'Text follows your device display size. Controls include labels and clear states. Arabic interface translation is not available yet.',
               ),
             ),
           ),
