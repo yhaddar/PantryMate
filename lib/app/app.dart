@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/inventory/presentation/inventory_page.dart';
+import '../features/auth/presentation/auth_page.dart';
 
 final _router = GoRouter(
   routes: [
     GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
+    GoRoute(path: '/auth', builder: (context, state) => const AuthPage()),
     GoRoute(
       path: '/inventory',
       builder: (context, state) => const InventoryPage(),
@@ -35,7 +37,15 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('PantryMate')),
+      appBar: AppBar(
+        title: const Text('PantryMate'),
+        actions: [
+          TextButton(
+            onPressed: () => context.push('/auth'),
+            child: const Text('Sign in'),
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
