@@ -167,6 +167,27 @@ class DashboardPage extends ConsumerWidget {
                 );
               },
             ),
+          if (householdId != null)
+            FutureBuilder<SyncStatusSummary>(
+              future: ref
+                  .read(localDashboardRepositoryProvider)
+                  .loadSyncStatus(householdId),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return const SizedBox.shrink();
+                final status = snapshot.data!;
+                return _SummaryCard(
+                  label: status.failed > 0
+                      ? 'Synchronization needs attention'
+                      : 'Synchronization',
+                  value: status.needsAttention
+                      ? '${status.pending} pending · ${status.failed} failed locally'
+                      : 'All local changes are synchronized',
+                  icon: status.failed > 0
+                      ? Icons.sync_problem_outlined
+                      : Icons.sync_outlined,
+                );
+              },
+            ),
           const _SummaryCard(
             label: 'Shopping list',
             value: 'Open shopping to view shared lists',

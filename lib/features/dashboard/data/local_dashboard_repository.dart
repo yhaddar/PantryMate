@@ -14,6 +14,15 @@ class DashboardSummary {
   final int expiringSoonBatches;
 }
 
+class SyncStatusSummary {
+  const SyncStatusSummary({required this.pending, required this.failed});
+
+  final int pending;
+  final int failed;
+
+  bool get needsAttention => pending > 0 || failed > 0;
+}
+
 class LocalDashboardRepository {
   const LocalDashboardRepository(this._database);
 
@@ -47,6 +56,24 @@ class LocalDashboardRepository {
       activeBatches: active.length,
       expiredBatches: expired,
       expiringSoonBatches: soon,
+    );
+  }
+
+  Future<SyncStatusSummary> loadSyncStatus(String householdId) async {
+    final operations = await (_database.select(
+      _database.outboxOperations,
+    )..where((row) => row.householdId.equals(householdId))).get();
+    return SyncStatusSummary(
+      pending: operations
+          .where(
+            (operation) =>
+                operation.status == 'pending' ||
+                operation.status == 'processing',
+          )
+          .length,
+      failed: operations
+          .where((operation) => operation.status == 'failed')
+          .length,
     );
   }
 
