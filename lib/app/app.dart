@@ -13,6 +13,7 @@ import '../core/providers/app_providers.dart';
 import '../features/settings/presentation/notification_settings_page.dart';
 import '../features/reports/presentation/reports_page.dart';
 import '../features/settings/presentation/appearance_settings_page.dart';
+import '../features/activity/presentation/activity_page.dart';
 
 final _router = GoRouter(
   routes: [
@@ -46,6 +47,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/settings/appearance',
       builder: (context, state) => const AppearanceSettingsPage(),
+    ),
+    GoRoute(
+      path: '/activity',
+      builder: (context, state) => const ActivityPage(),
     ),
   ],
 );
@@ -92,6 +97,7 @@ class DashboardPage extends ConsumerWidget {
                 value: '/settings/appearance',
                 child: Text('Appearance'),
               ),
+              PopupMenuItem(value: '/activity', child: Text('Activity')),
               PopupMenuItem(value: '/reports', child: Text('Reports')),
             ],
           ),
