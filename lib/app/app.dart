@@ -14,6 +14,7 @@ import '../features/settings/presentation/notification_settings_page.dart';
 import '../features/reports/presentation/reports_page.dart';
 import '../features/settings/presentation/appearance_settings_page.dart';
 import '../features/activity/presentation/activity_page.dart';
+import '../features/data_management/presentation/feedback_page.dart';
 
 final _router = GoRouter(
   routes: [
@@ -51,6 +52,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/activity',
       builder: (context, state) => const ActivityPage(),
+    ),
+    GoRoute(
+      path: '/settings/feedback',
+      builder: (context, state) => const FeedbackPage(),
     ),
   ],
 );
@@ -98,6 +103,10 @@ class DashboardPage extends ConsumerWidget {
                 child: Text('Appearance'),
               ),
               PopupMenuItem(value: '/activity', child: Text('Activity')),
+              PopupMenuItem(
+                value: '/settings/feedback',
+                child: Text('Help and feedback'),
+              ),
               PopupMenuItem(value: '/reports', child: Text('Reports')),
             ],
           ),
