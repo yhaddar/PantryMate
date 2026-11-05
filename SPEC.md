@@ -5,7 +5,8 @@
 **Status:** Approved Requirements Baseline  
 **Platforms:** Android and iOS  
 **Backend:** Supabase  
-**Implementation Status:** Not started
+**Implementation Status:** In progress — see `EXECUTION_TRACKER.md` for
+verified phase evidence and external blockers.
 
 ---
 

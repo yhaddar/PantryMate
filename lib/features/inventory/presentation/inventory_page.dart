@@ -11,7 +11,17 @@ class InventoryPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final householdId = ref.watch(activeHouseholdIdProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Inventory')),
+      appBar: AppBar(
+        title: const Text('Inventory'),
+        actions: [
+          if (householdId != null)
+            IconButton(
+              tooltip: 'Import CSV',
+              icon: const Icon(Icons.upload_file_outlined),
+              onPressed: () => context.push('/inventory/import'),
+            ),
+        ],
+      ),
       floatingActionButton: householdId == null
           ? null
           : FloatingActionButton.extended(

@@ -22,4 +22,13 @@ void main() {
     final preview = validator.preview('name,quantity\nBeans,2');
     expect(preview.errors.single.message, contains('Header'));
   });
+
+  test('CSV import requires a date-only expiration value', () {
+    final preview = validator.preview(
+      'product,quantity,unit,expires_on,location\nBeans,2,piece,2026-12-01T09:00:00,Shelf',
+    );
+
+    expect(preview.validRows, isEmpty);
+    expect(preview.errors.single.message, contains('ISO date'));
+  });
 }

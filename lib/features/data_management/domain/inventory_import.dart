@@ -73,8 +73,10 @@ class InventoryImportValidator {
         );
         continue;
       }
-      if (values['expires_on']!.isNotEmpty &&
-          DateTime.tryParse(values['expires_on']!) == null) {
+      final expiresOn = values['expires_on']!;
+      if (expiresOn.isNotEmpty &&
+          (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(expiresOn) ||
+              DateTime.tryParse(expiresOn) == null)) {
         errors.add(
           InventoryImportError(
             index + 1,

@@ -17,6 +17,7 @@ import '../features/settings/presentation/appearance_settings_page.dart';
 import '../features/activity/presentation/activity_page.dart';
 import '../features/data_management/presentation/feedback_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
+import '../features/data_management/presentation/inventory_import_page.dart';
 
 final _router = GoRouter(
   routes: [
@@ -62,6 +63,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/onboarding',
       builder: (context, state) => const OnboardingPage(),
+    ),
+    GoRoute(
+      path: '/inventory/import',
+      builder: (context, state) => const InventoryImportPage(),
     ),
   ],
 );

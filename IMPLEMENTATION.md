@@ -9,8 +9,9 @@ is currently a read-only audit prompt rather than the Phase 0–14 task plan
 referenced by the implementation request; this discrepancy is recorded in
 Phase 0 and is not being silently treated as an approved plan.
 
-The implementation branch is `implementation/pantry-mate`. No commit or push
-is authorized by this task.
+The implementation branch is `implementation/pantry-mate`. Local commits are
+created only after the applicable verification passes. Pushes and merges remain
+unauthorized unless the user explicitly approves them.
 
 ## Execution approach
 
