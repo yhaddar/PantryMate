@@ -100,12 +100,19 @@ class _HouseholdsPageState extends ConsumerState<HouseholdsPage> {
                     if (snapshot.data!.isEmpty) {
                       return const Text('No accessible households.');
                     }
+                    final selectedId = ref.watch(activeHouseholdIdProvider);
                     return Column(
                       children: snapshot.data!
                           .map(
                             (household) => ListTile(
                               title: Text(household.name),
                               subtitle: Text(household.timezone),
+                              trailing: selectedId == household.id
+                                  ? const Icon(Icons.check)
+                                  : null,
+                              onTap: () => ref
+                                  .read(activeHouseholdIdProvider.notifier)
+                                  .select(household.id),
                             ),
                           )
                           .toList(),

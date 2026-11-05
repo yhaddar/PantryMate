@@ -14,7 +14,17 @@ final databaseProvider = Provider<AppDatabase>((ref) {
   return database;
 });
 
-final activeHouseholdIdProvider = Provider<String?>((ref) => null);
+class ActiveHouseholdNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void select(String householdId) => state = householdId;
+}
+
+final activeHouseholdIdProvider =
+    NotifierProvider<ActiveHouseholdNotifier, String?>(
+      ActiveHouseholdNotifier.new,
+    );
 
 final localInventoryRepositoryProvider = Provider<LocalInventoryRepository>((
   ref,
