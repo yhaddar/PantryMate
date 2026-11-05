@@ -49,4 +49,33 @@ class HouseholdRepository {
       role: HouseholdRole.values.byName(row['role'] as String),
     );
   }
+
+  Future<void> transferOwnership(String householdId, String newOwnerId) {
+    return _client.rpc(
+      'transfer_household_ownership',
+      params: {'p_household_id': householdId, 'p_new_owner': newOwnerId},
+    );
+  }
+
+  Future<void> removeMember(String householdId, String userId) {
+    return _client.rpc(
+      'remove_household_member',
+      params: {'p_household_id': householdId, 'p_user_id': userId},
+    );
+  }
+
+  Future<DateTime> requestDeletion(String householdId) async {
+    final result = await _client.rpc(
+      'request_household_deletion',
+      params: {'p_household_id': householdId},
+    );
+    return DateTime.parse(result as String);
+  }
+
+  Future<void> cancelDeletion(String householdId) {
+    return _client.rpc(
+      'cancel_household_deletion',
+      params: {'p_household_id': householdId},
+    );
+  }
 }
