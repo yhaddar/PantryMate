@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/providers/app_providers.dart';
+import '../../../infrastructure/external_apis/open_food_facts_service.dart';
 import '../data/product_repository.dart';
 import '../domain/product_models.dart';
 
@@ -22,6 +23,7 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
   Future<List<Product>>? _products;
   String? _error;
   bool _saving = false;
+  bool _lookingUp = false;
 
   @override
   void dispose() {
@@ -66,6 +68,27 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
     }
   }
 
+  Future<void> _lookupBarcode() async {
+    setState(() {
+      _lookingUp = true;
+      _error = null;
+    });
+    try {
+      final metadata = await OpenFoodFactsService().lookup(_barcode.text);
+      if (!mounted) return;
+      setState(() {
+        if (metadata.name != null && metadata.name!.trim().isNotEmpty) {
+          _name.text = metadata.name!.trim();
+        }
+        _barcode.text = metadata.barcode;
+      });
+    } on ProductLookupException catch (error) {
+      if (mounted) setState(() => _error = error.message);
+    } finally {
+      if (mounted) setState(() => _lookingUp = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final householdId = ref.watch(activeHouseholdIdProvider);
@@ -88,11 +111,30 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
                   controller: _name,
                   decoration: const InputDecoration(labelText: 'Product name'),
                 ),
-                TextField(
-                  controller: _barcode,
-                  decoration: const InputDecoration(
-                    labelText: 'Barcode (optional)',
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _barcode,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Barcode (optional)',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton(
+                      onPressed: _lookingUp ? null : _lookupBarcode,
+                      child: _lookingUp
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Lookup'),
+                    ),
+                  ],
                 ),
                 DropdownButtonFormField<String>(
                   initialValue: _category,
