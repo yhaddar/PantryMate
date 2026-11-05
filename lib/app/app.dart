@@ -6,6 +6,7 @@ import '../features/inventory/presentation/add_inventory_page.dart';
 import '../features/auth/presentation/auth_page.dart';
 import '../features/households/presentation/households_page.dart';
 import '../features/products/presentation/products_page.dart';
+import '../features/shopping/presentation/shopping_page.dart';
 
 final _router = GoRouter(
   routes: [
@@ -26,6 +27,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/products',
       builder: (context, state) => const ProductsPage(),
+    ),
+    GoRoute(
+      path: '/shopping',
+      builder: (context, state) => const ShoppingPage(),
     ),
   ],
 );
@@ -66,6 +71,10 @@ class DashboardPage extends StatelessWidget {
           TextButton(
             onPressed: () => context.push('/products'),
             child: const Text('Products'),
+          ),
+          TextButton(
+            onPressed: () => context.push('/shopping'),
+            child: const Text('Shopping'),
           ),
         ],
       ),
