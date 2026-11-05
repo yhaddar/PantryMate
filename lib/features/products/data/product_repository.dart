@@ -66,6 +66,26 @@ class ProductRepository {
     }
   }
 
+  Future<List<String>> listRecentlyUsedProductIds(String householdId) async {
+    final rows = await _client
+        .from('recent_product_usage')
+        .select('product_id')
+        .eq('household_id', householdId)
+        .order('last_used_at', ascending: false)
+        .limit(8);
+    return rows.map((row) => row['product_id'] as String).toList();
+  }
+
+  Future<void> recordRecentlyUsed({
+    required String householdId,
+    required String productId,
+  }) async {
+    await _client.rpc(
+      'record_recent_product',
+      params: {'p_household_id': householdId, 'p_product_id': productId},
+    );
+  }
+
   Product _fromRow(Map<String, dynamic> row) => Product(
     id: row['id'] as String,
     householdId: row['household_id'] as String,

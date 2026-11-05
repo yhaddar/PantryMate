@@ -22,6 +22,7 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
   String _unit = 'piece';
   Future<List<Product>>? _products;
   final _favoriteIds = <String>{};
+  List<String> _recentProductIds = const [];
   String? _error;
   bool _saving = false;
   bool _lookingUp = false;
@@ -40,6 +41,8 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
     try {
       final favorites = await repository.listFavoriteProductIds(householdId);
       if (mounted) setState(() => _favoriteIds..addAll(favorites));
+      final recent = await repository.listRecentlyUsedProductIds(householdId);
+      if (mounted) setState(() => _recentProductIds = recent);
     } on PostgrestException catch (error) {
       if (mounted) setState(() => _error = error.message);
     }
@@ -220,29 +223,64 @@ class _ProductsPageState extends ConsumerState<ProductsPage> {
                       if (snapshot.data!.isEmpty) {
                         return const Text('No products yet.');
                       }
+                      final products = snapshot.data!;
+                      final byId = {
+                        for (final product in products) product.id: product,
+                      };
+                      final recent = _recentProductIds
+                          .map((id) => byId[id])
+                          .whereType<Product>()
+                          .toList();
                       return Column(
-                        children: snapshot.data!
-                            .map(
+                        children: [
+                          if (recent.isNotEmpty) ...[
+                            const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Recently used',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            ...recent.map(
                               (product) => ListTile(
+                                leading: const Icon(Icons.history),
                                 title: Text(product.name),
                                 subtitle: Text(
                                   '${product.categoryId} · ${product.baseUnit}',
                                 ),
-                                trailing: IconButton(
-                                  tooltip: _favoriteIds.contains(product.id)
-                                      ? 'Remove favorite'
-                                      : 'Add favorite',
-                                  icon: Icon(
-                                    _favoriteIds.contains(product.id)
-                                        ? Icons.star
-                                        : Icons.star_border,
-                                  ),
-                                  onPressed: () =>
-                                      _setFavorite(householdId, product),
-                                ),
+                                onTap: () async {
+                                  await ProductRepository(
+                                    Supabase.instance.client,
+                                  ).recordRecentlyUsed(
+                                    householdId: householdId,
+                                    productId: product.id,
+                                  );
+                                },
                               ),
-                            )
-                            .toList(),
+                            ),
+                            const Divider(),
+                          ],
+                          ...products.map(
+                            (product) => ListTile(
+                              title: Text(product.name),
+                              subtitle: Text(
+                                '${product.categoryId} · ${product.baseUnit}',
+                              ),
+                              trailing: IconButton(
+                                tooltip: _favoriteIds.contains(product.id)
+                                    ? 'Remove favorite'
+                                    : 'Add favorite',
+                                icon: Icon(
+                                  _favoriteIds.contains(product.id)
+                                      ? Icons.star
+                                      : Icons.star_border,
+                                ),
+                                onPressed: () =>
+                                    _setFavorite(householdId, product),
+                              ),
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
