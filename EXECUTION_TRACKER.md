@@ -14,9 +14,9 @@
 | 9 Notifications | Partial | Notification schema and local timing rules added; scheduling worker, push credentials, and device delivery tests remain. |
 | 10 Dashboard and activity | Partial | Initial dashboard shell exists; authoritative summaries, activity feed, filtering, and stale/offline data states remain. |
 | 11 Reports and data management | Partial | CSV codec exists; PDF snapshot, import preview/atomic apply, permissions, and deletion workflows remain. |
-| 12 Additional features | Not started | Depends on catalog, storage, and feedback boundaries. |
+| 12 Additional features | Partial | Open Food Facts v3 adapter, private product-image selection/storage boundary, and external failure classification added; barcode UI, image cleanup jobs, favorites, feedback, and help remain. |
 | 13 Settings and accessibility | Partial | Theme/settings models and Material 3 shell exist; persistent settings, onboarding, accessibility audit, and permissions UX remain. |
-| 14 Hardening and release | Not started | Requires complete implementation and external/platform verification. |
+| 14 Hardening and release | Partial | CI quality-gate workflow added; full RLS/concurrency/migration/device/E2E/release verification remains. |
 
 No commits or pushes have been made. The tracker must be updated only with
 evidence from commands or tests actually executed.
