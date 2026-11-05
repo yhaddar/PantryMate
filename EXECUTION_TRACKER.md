@@ -14,7 +14,7 @@
 | 9 Notifications | Partial | Notification schema, local timing rules, startup plugin initialization, contextual permission action, and preference controls added; scheduling worker, push credentials, and device delivery tests remain. |
 | 10 Dashboard and activity | Partial | Dashboard reads local active/expired/expiring batch summaries; authorized household activity feed route and explicit loading/empty/error/configuration states are implemented. Filtering and stale/offline freshness indicators remain. |
 | 11 Reports and data management | Partial | CSV codec, PDF generation with local documents-directory persistence, import preview validation, feedback boundary, and account-deletion request RPC exist; atomic import apply, sharing, and full deletion worker remain. |
-| 12 Additional features | Partial | Open Food Facts v3 adapter is connected to the product form; private product-image boundary and feedback repository exist. Image cleanup jobs, favorites, and help remain. |
+| 12 Additional features | Partial | Open Food Facts v3 adapter is connected to the product form; private product-image boundary, feedback repository, and user-specific household-scoped favorites are implemented. Image cleanup jobs, recently used products, and help remain. |
 | 13 Settings and accessibility | Partial | Notification settings with contextual device permission and appearance theme controls exist; persistent theme/settings, onboarding, app lock, accessibility audit, and RTL checks remain. |
 | 14 Hardening and release | Partial | CI quality-gate workflow added; full RLS/concurrency/migration/device/E2E/release verification remains. |
 
