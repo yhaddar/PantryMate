@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/inventory/presentation/inventory_page.dart';
+import '../features/inventory/presentation/add_inventory_page.dart';
 import '../features/auth/presentation/auth_page.dart';
 import '../features/households/presentation/households_page.dart';
 import '../features/products/presentation/products_page.dart';
@@ -17,6 +18,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/inventory',
       builder: (context, state) => const InventoryPage(),
+    ),
+    GoRoute(
+      path: '/inventory/add',
+      builder: (context, state) => const AddInventoryPage(),
     ),
     GoRoute(
       path: '/products',

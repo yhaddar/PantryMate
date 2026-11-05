@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/app_providers.dart';
 
@@ -11,6 +12,13 @@ class InventoryPage extends ConsumerWidget {
     final householdId = ref.watch(activeHouseholdIdProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Inventory')),
+      floatingActionButton: householdId == null
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () => context.push('/inventory/add'),
+              icon: const Icon(Icons.add),
+              label: const Text('Add'),
+            ),
       body: householdId == null
           ? const _NoHouseholdState()
           : StreamBuilder(
