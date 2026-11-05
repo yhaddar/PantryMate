@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../config/app_config.dart';
 import '../../infrastructure/database/local/app_database.dart';
@@ -11,10 +14,27 @@ final appConfigProvider = Provider<AppConfig>(
 );
 
 class ThemeModeNotifier extends Notifier<ThemeMode> {
-  @override
-  ThemeMode build() => ThemeMode.system;
+  static const _storageKey = 'theme_mode';
 
-  void setMode(ThemeMode mode) => state = mode;
+  @override
+  ThemeMode build() {
+    unawaited(_restore());
+    return ThemeMode.system;
+  }
+
+  void setMode(ThemeMode mode) {
+    state = mode;
+    unawaited(
+      const FlutterSecureStorage().write(key: _storageKey, value: mode.name),
+    );
+  }
+
+  Future<void> _restore() async {
+    final stored = await const FlutterSecureStorage().read(key: _storageKey);
+    if (stored == null) return;
+    final mode = ThemeMode.values.where((value) => value.name == stored);
+    if (mode.isNotEmpty) state = mode.first;
+  }
 }
 
 final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(
