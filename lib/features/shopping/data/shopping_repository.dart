@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../domain/shopping_models.dart';
 
@@ -6,6 +7,25 @@ class ShoppingRepository {
   const ShoppingRepository(this._client);
 
   final SupabaseClient _client;
+
+  Future<Map<String, dynamic>> purchaseItem({
+    required String itemId,
+    required num quantity,
+    required String unit,
+    required String locationId,
+  }) async {
+    final result = await _client.rpc(
+      'purchase_shopping_item',
+      params: {
+        'p_operation_id': const Uuid().v4(),
+        'p_item_id': itemId,
+        'p_quantity': quantity,
+        'p_unit': unit,
+        'p_location_id': locationId,
+      },
+    );
+    return Map<String, dynamic>.from(result as Map);
+  }
 
   Future<List<ShoppingList>> lists(String householdId) async {
     final rows = await _client

@@ -85,6 +85,46 @@ class _ShoppingPageState extends ConsumerState<ShoppingPage> {
     await _load(householdId);
   }
 
+  Future<void> _purchase(String householdId, ShoppingItem item) async {
+    final locationController = TextEditingController();
+    final locationId = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Purchase item'),
+        content: TextField(
+          controller: locationController,
+          decoration: const InputDecoration(labelText: 'Storage location ID'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.pop(context, locationController.text.trim()),
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+    locationController.dispose();
+    if (locationId == null || locationId.isEmpty) return;
+    final repository = _repository();
+    if (repository == null) return;
+    try {
+      await repository.purchaseItem(
+        itemId: item.id,
+        quantity: item.quantity,
+        unit: item.unit,
+        locationId: locationId,
+      );
+      await _load(householdId);
+    } on PostgrestException catch (error) {
+      if (mounted) setState(() => _error = error.message);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final householdId = ref.watch(activeHouseholdIdProvider);
@@ -162,7 +202,10 @@ class _ShoppingPageState extends ConsumerState<ShoppingPage> {
                       '${item.quantity} ${item.unit} · ${item.priority}',
                     ),
                     trailing: item.purchasedAt == null
-                        ? null
+                        ? IconButton(
+                            icon: const Icon(Icons.check_circle_outline),
+                            onPressed: () => _purchase(householdId, item),
+                          )
                         : const Icon(Icons.check),
                   ),
                 ),
