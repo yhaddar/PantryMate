@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../core/providers/app_providers.dart';
 import '../data/pdf_report_service.dart';
@@ -35,10 +38,15 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
         summary,
         generatedAt: DateTime.now(),
       );
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File(
+        '${directory.path}/pantrymate-report-${DateTime.now().millisecondsSinceEpoch}.pdf',
+      );
+      await file.writeAsBytes(bytes, flush: true);
       if (mounted) {
         setState(
-          () => _message =
-              'PDF snapshot generated locally (${bytes.length} bytes).',
+          () =>
+              _message = 'PDF snapshot saved locally (${bytes.length} bytes).',
         );
       }
     } catch (_) {
