@@ -12,6 +12,7 @@ import '../features/dashboard/data/local_dashboard_repository.dart';
 import '../core/providers/app_providers.dart';
 import '../features/settings/presentation/notification_settings_page.dart';
 import '../features/reports/presentation/reports_page.dart';
+import '../features/settings/presentation/appearance_settings_page.dart';
 
 final _router = GoRouter(
   routes: [
@@ -42,20 +43,25 @@ final _router = GoRouter(
       builder: (context, state) => const NotificationSettingsPage(),
     ),
     GoRoute(path: '/reports', builder: (context, state) => const ReportsPage()),
+    GoRoute(
+      path: '/settings/appearance',
+      builder: (context, state) => const AppearanceSettingsPage(),
+    ),
   ],
 );
 
-class PantryMateApp extends StatelessWidget {
+class PantryMateApp extends ConsumerWidget {
   const PantryMateApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       title: 'PantryMate',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff2f6f4e)),
         useMaterial3: true,
       ),
+      themeMode: ref.watch(themeModeProvider),
       routerConfig: _router,
     );
   }
@@ -81,6 +87,10 @@ class DashboardPage extends ConsumerWidget {
               PopupMenuItem(
                 value: '/settings/notifications',
                 child: Text('Notifications'),
+              ),
+              PopupMenuItem(
+                value: '/settings/appearance',
+                child: Text('Appearance'),
               ),
               PopupMenuItem(value: '/reports', child: Text('Reports')),
             ],
